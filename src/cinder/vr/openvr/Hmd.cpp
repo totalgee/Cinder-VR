@@ -291,7 +291,9 @@ void Hmd::setupDistortion()
 		for( int x = 0; x < lensGridSegmentCountH; ++x ) {
 			float u = x * w; 
 			float v = 1.0f - ( y * h );
-			::vr::DistortionCoordinates_t dc = mVrSystem->ComputeDistortion( ::vr::Eye_Left, u, v );
+			::vr::DistortionCoordinates_t dc;
+			auto success = mVrSystem->ComputeDistortion( ::vr::Eye_Left, u, v, &dc );
+			assert(success && "ComputeDistortion failed to find suitable coordinates");
 			
 			VertexDesc vert		= VertexDesc();
 			vert.position		= ci::vec2( xOffset + u, -1.0f + ( 2.0f * y * h ) );
@@ -308,7 +310,9 @@ void Hmd::setupDistortion()
 		for( int x = 0; x < lensGridSegmentCountH; ++x ) {
 			float u = x * w; 
 			float v = 1 - ( y * h );
-			::vr::DistortionCoordinates_t dc = mVrSystem->ComputeDistortion( ::vr::Eye_Right, u, v );
+			::vr::DistortionCoordinates_t dc;
+			auto success = mVrSystem->ComputeDistortion(::vr::Eye_Right, u, v, &dc);
+			assert(success && "ComputeDistortion failed to find suitable coordinates");
 
 			VertexDesc vert		= VertexDesc();
 			vert.position		= ci::vec2( xOffset + u, -1.0f + ( 2.0f * y * h ) );
@@ -436,7 +440,8 @@ void Hmd::updatePoseData()
 
 void Hmd::updateControllerGeometry()
 {
-	if( mVrSystem->IsInputFocusCapturedByAnotherProcess() ) {
+	// @todo Find the right way to do the equivalent now.
+	if( false /* mVrSystem->IsInputFocusCapturedByAnotherProcess() */ ) {
 		return;
 	}
 
@@ -555,14 +560,14 @@ void Hmd::submitFrame()
 	// Left eye
 	{
 		GLuint resolvedTexId = mRenderTargetLeft->getColorTexture()->getId();
-		::vr::Texture_t eyeTex = { reinterpret_cast<void*>( resolvedTexId ), ::vr::API_OpenGL, ::vr::ColorSpace_Gamma };
+		::vr::Texture_t eyeTex = { reinterpret_cast<void*>( resolvedTexId ), ::vr::TextureType_OpenGL, ::vr::ColorSpace_Gamma };
 		::vr::VRCompositor()->Submit( ::vr::Eye_Left, &eyeTex );
 	}
 
 	// Right eye
 	{
 		GLuint resolvedTexId = mRenderTargetRight->getColorTexture()->getId();
-		::vr::Texture_t eyeTex = { reinterpret_cast<void*>( resolvedTexId ), ::vr::API_OpenGL, ::vr::ColorSpace_Gamma };
+		::vr::Texture_t eyeTex = { reinterpret_cast<void*>( resolvedTexId ), ::vr::TextureType_OpenGL, ::vr::ColorSpace_Gamma };
 		::vr::VRCompositor()->Submit( ::vr::Eye_Right, &eyeTex );
 	}
 
@@ -620,8 +625,8 @@ void Hmd::enableEye( ci::vr::Eye eye, ci::vr::CoordSys eyeMatrixMode )
 		case ci::vr::EYE_HMD: {
 			auto viewport = ci::gl::getViewport();
 			auto area = ci::Area( viewport.first.x, viewport.first.y, viewport.first.x + viewport.second.x, viewport.first.y + viewport.second.y );
-			float width = area.getWidth();
-			float height = area.getHeight();
+			float width = static_cast<float>(area.getWidth());
+			float height = static_cast<float>(area.getHeight());
 			float aspect = width / height;
 			ci::mat4 mat = glm::perspectiveFov( toRadians( getFullFov() / aspect ), width, height, mNearClip, mFarClip );
 			mHmdCamera.setProjectionMatrix( mat );
@@ -790,7 +795,8 @@ void Hmd::drawMirroredImpl( const ci::Rectf& r )
 
 void Hmd::drawControllers( ci::vr::Eye eye )
 {
-	if( mVrSystem->IsInputFocusCapturedByAnotherProcess() ) {
+	// @todo Find the right way to do the equivalent now.
+	if( false /* mVrSystem->IsInputFocusCapturedByAnotherProcess() */ ) {
 		return;
 	}
 
