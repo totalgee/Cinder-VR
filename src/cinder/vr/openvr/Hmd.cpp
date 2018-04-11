@@ -248,7 +248,9 @@ void Hmd::setupStereoRenderTargets()
 	uint32_t renderHeight = 0;
 	mVrSystem->GetRecommendedRenderTargetSize( &renderWidth, &renderHeight );
 	mRenderTargetSize = ivec2( static_cast<int32_t>( renderWidth ), static_cast<int32_t>( renderHeight ) );
-	CI_LOG_I( "mRenderTargetSize=" << mRenderTargetSize );
+	auto const samples = getSessionOptions().getSampleCount();
+	auto const csaa = getSessionOptions().getCoverageSamples();
+	CI_LOG_I( "mRenderTargetSize=" << mRenderTargetSize << " samples=" << samples << " csaa=" << csaa );
 
 	// Texture format
 	ci::gl::Texture2d::Format texFormat = ci::gl::Texture2d::Format();
@@ -259,7 +261,8 @@ void Hmd::setupStereoRenderTargets()
 	texFormat.setMagFilter( GL_LINEAR );
 	// Fbo format
 	ci::gl::Fbo::Format fboFormat = ci::gl::Fbo::Format();
-	fboFormat.setSamples( 4 );
+	fboFormat.setSamples( samples );
+	fboFormat.setCoverageSamples( csaa );
 	fboFormat.setColorTextureFormat( texFormat );
 	fboFormat.enableDepthBuffer();
 	// Render targets
@@ -579,7 +582,8 @@ void Hmd::submitFrame()
 		// appears to clear that up. Temporary fix while I try to get nvidia to investigate this problem.
 		// 1/29/2014 mikesart
 		//
-		glFinish();
+		// 4/11/2018 totalgee - seems to be fine now...
+		//glFinish();
 	}
 
 
@@ -603,6 +607,11 @@ ci::Area Hmd::getEyeViewport( ci::vr::Eye eye ) const
 {
 	// The viewport is the same for both eyes
 	return Area( { 0, 0 }, mRenderTargetSize );
+}
+
+ci::gl::FboRef Hmd::getEyeFramebuffer(ci::vr::Eye eye) const
+{
+	return ( ci::vr::EYE_LEFT == eye ) ? mRenderTargetLeft : mRenderTargetRight;
 }
 
 void Hmd::enableEye( ci::vr::Eye eye, ci::vr::CoordSys eyeMatrixMode )

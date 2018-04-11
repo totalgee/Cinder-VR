@@ -73,6 +73,9 @@ public:
 	uint32_t							getSampleCount() const { return mSampleCount; }
 	SessionOptions&						setSampleCount( uint32_t value ) { mSampleCount = value; return *this; }
 
+	uint32_t							getCoverageSamples() const { return mCoverageSamples; }
+	SessionOptions&						setCoverageSamples(uint32_t value) { mCoverageSamples = value; return *this; }
+
 	uint32_t							getMipLevels() const { return mMipLevels; }
 	SessionOptions&						setMipLevels( uint32_t value ) { mMipLevels = value; return *this; }
 
@@ -102,6 +105,7 @@ private:
 	ci::vec3							mOriginOffset = ci::vec3( 0, 0, -1 );
 
 	uint32_t							mSampleCount = 1;
+	uint32_t							mCoverageSamples = 0;
 	uint32_t							mMipLevels = 1;
 
 	float								mNearClip = 0.1f;

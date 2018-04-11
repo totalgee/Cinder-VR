@@ -370,6 +370,11 @@ ci::Area Hmd::getEyeViewport( ci::vr::Eye eye ) const
 	return Area( 0, 0, 0, 0 );
 }
 
+ci::gl::FboRef Hmd::getEyeFramebuffer(ci::vr::Eye eye) const
+{
+	return mRenderTargets[ static_cast<size_t>( mCurrentSwapChainIndex ) ];
+}
+
 void Hmd::enableEye( ci::vr::Eye eye, ci::vr::CoordSys eyeMatrixMode )
 {
 	ci::Area area = getEyeViewport( eye );

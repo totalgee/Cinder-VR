@@ -80,6 +80,7 @@ public:
 	virtual float						getFullFov() const;
 
 	virtual ci::Area					getEyeViewport( ci::vr::Eye eye ) const override;
+	virtual gl::FboRef					getEyeFramebuffer( ci::vr::Eye eye ) const override;
 
 	virtual	void						enableEye( ci::vr::Eye eye, ci::vr::CoordSys eyeMatrixMode = ci::vr::COORD_SYS_WORLD ) override;
 

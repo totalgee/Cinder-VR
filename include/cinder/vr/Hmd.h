@@ -42,6 +42,7 @@
 #include "cinder/Area.h"
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
+#include "cinder/gl/Fbo.h"
 
 #include <vector>
 
@@ -101,6 +102,7 @@ public:
 	ci::mat4							getEyeProjectionMatrix( ci::vr::Eye eye ) const;
 	ci::mat4							getEyeViewProjectionMatrix( ci::vr::Eye eye ) const;
 	virtual ci::Area					getEyeViewport( ci::vr::Eye eye ) const = 0;
+	virtual ci::gl::FboRef				getEyeFramebuffer( ci::vr::Eye eye ) const = 0;
 
 	////! Sets the look at position and target. Parameters are in world coordinate.
 	//virtual void						setLookAt( const ci::vec3 &position, const ci::vec3 &target, const ci::vec3& worldUp = ci::vec3( 0, 1, 0 ) );
