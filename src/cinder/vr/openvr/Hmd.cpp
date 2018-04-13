@@ -582,8 +582,7 @@ void Hmd::submitFrame()
 		// appears to clear that up. Temporary fix while I try to get nvidia to investigate this problem.
 		// 1/29/2014 mikesart
 		//
-		// 4/11/2018 totalgee - seems to be fine now...
-		//glFinish();
+		glFinish();
 	}
 
 
